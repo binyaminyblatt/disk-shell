@@ -336,25 +336,17 @@
     grid-template: repeat(2, minmax(0, 1fr)) / minmax(0, 1fr);
   }
 
-  &.split-none .primary-pane {
-    grid-area: 1 / 1;
-  }
+  &.split-none .primary-pane { grid-area: 1 / 1; }
 
-  &.split-vertical .primary-pane {
-    grid-area: 1 / 1;
-  }
+  &.split-vertical .primary-pane { grid-area: 1 / 1; }
 
-  &.split-vertical .secondary-pane {
-    grid-area: 1 / 2;
+  &.split-vertical .secondary-pane { grid-area: 1 / 2;
     border-left: 1px solid $border;
   }
 
-  &.split-horizontal .primary-pane {
-    grid-area: 1 / 1;
-  }
+  &.split-horizontal .primary-pane { grid-area: 1 / 1; }
 
-  &.split-horizontal .secondary-pane {
-    grid-area: 2 / 1;
+  &.split-horizontal .secondary-pane { grid-area: 2 / 1;
     border-top: 1px solid $border;
   }
 }
