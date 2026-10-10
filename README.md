@@ -23,8 +23,21 @@ terminal port on the network.
   explicitly enabled for the current DiskShell window.
 - **DSM-native authentication** — uses the current DSM session, allows DSM
   administrators only, and starts the shell under the authenticated account.
+- **Live system monitor** — automatically scaled one-minute histories per logical CPU core and for
+  RAM usage, the fullest NAS volume, fastest fan, and hottest drive sensor;
+  values stream every two seconds over an authenticated WebSocket. Click a widget
+  for scrollable individual readings. A shared sampler avoids per-window polling;
+  DSM sessions are revalidated every minute; temporary lookup failures reconnect with backoff.
+  A monotonic graph clock and sample sequence numbers tolerate NAS clock corrections.
+  History resets on service restart and otherwise survives reconnects
+  and shows gaps where no readings were collected. Hidden monitors suspend their
+  connections, and sampling pauses when no monitors are subscribed.
+  Fans and disk temperatures require readable Linux hwmon sensors; unsupported
+  hardware (including VirtualDSM) shows an unavailable indicator.
 - **Responsive toolbar** — accessible icon controls, state-aware tooltips, and a
-  compact layout that adapts to the DSM window.
+  compact layout that adapts to the DSM window. Monitor widgets disappear from
+  right to left as the window narrows: drive temperature, fans, volume usage,
+  RAM, then CPU.
 
 ## Installation
 

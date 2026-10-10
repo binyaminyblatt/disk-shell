@@ -1,6 +1,18 @@
 import type { ConnectionState } from "./types.js";
 
 export type Messages = {
+  systemMonitor: string;
+  chartScale: string;
+  closeMetrics: string;
+  metricReadings: string;
+  metricsStale: string;
+  chartHistory: string;
+  cpuCores: string;
+  ramUsage: string;
+  diskUsage: string;
+  fanSpeed: string;
+  diskTemperature: string;
+  metricsUnavailable: string;
   subtitle: string;
   toolbarLabel: string;
   sessionsTooltip: string;

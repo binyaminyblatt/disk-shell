@@ -1,5 +1,17 @@
 # Changelog
 
+Unreleased
+
+- Recover stalled metrics streams without waiting for the close handshake; ignore late socket events and use browser-valid close codes for malformed messages.
+
+- Retry temporary DSM authentication failures without treating them as revoked sessions.
+- Reposition open metric details on resize and close them when their widget is hidden.
+- Use a monotonic graph clock, stream identity, and sample sequence numbers to handle clock corrections and service restarts.
+
+- Added localized, automatically scaled header histories for each logical CPU core, RAM, NAS volume usage, fan speed, and available drive temperatures.
+- Added an authenticated metrics WebSocket with a shared sampler, periodic session validation, and bounded timestamped history with gaps on reconnect.
+- Pause hidden monitors and expose all per-core readings in a scrollable, keyboard-accessible detail panel.
+
 v1.2.0
 
 - Fixed Escape handling so closing terminal search does not close the DSM window.

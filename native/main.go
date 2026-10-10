@@ -79,8 +79,12 @@ func main() {
 		log.Fatal("diskshell-server must be installed with its DSM setuid privilege")
 	}
 
+	metricsContext, stopMetrics := context.WithCancel(context.Background())
+	defer stopMetrics()
+	go metricsService.run(metricsContext)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/diskshell/health", health)
+	mux.HandleFunc("/diskshell/metrics", metricsIndex)
 	mux.HandleFunc("/diskshell/sessions", sessionIndex)
 	mux.HandleFunc("/diskshell/uploads", uploadIndex)
 	mux.HandleFunc("/diskshell/uploads/check", uploadCheckIndex)
@@ -96,6 +100,7 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		<-stop
+		stopMetrics()
 		sessionStore.shutdown()
 		_ = server.Close()
 	}()
@@ -286,6 +291,8 @@ func sessionIndex(response http.ResponseWriter, request *http.Request) {
 	_ = json.NewEncoder(response).Encode(serverMessage{Type: "sessions", Sessions: sessionStore.list(account.username)})
 }
 
+var errSessionDenied = errors.New("DSM session denied")
+
 var errServiceBusy = errors.New("terminal service is busy")
 
 func authenticateWithSlot(request *http.Request) (*identity, error) {
@@ -325,7 +332,7 @@ func authenticateContext(ctx context.Context, request *http.Request) (*identity,
 	}
 	username := strings.TrimSpace(string(output))
 	if !validUsername(username) {
-		return nil, errors.New("DSM session lookup returned no valid account")
+		return nil, fmt.Errorf("%w: no valid account", errSessionDenied)
 	}
 	groupsCommand := exec.CommandContext(ctx, idBinary, "-Gn", username)
 	groupsCommand.WaitDelay = time.Second
@@ -334,7 +341,7 @@ func authenticateContext(ctx context.Context, request *http.Request) (*identity,
 		return nil, fmt.Errorf("DSM group lookup failed: %w", err)
 	}
 	if !containsWord(string(groups), "administrators") {
-		return nil, errors.New("administrator permission required")
+		return nil, fmt.Errorf("%w: administrator permission required", errSessionDenied)
 	}
 	account, err := user.Lookup(username)
 	if err != nil {

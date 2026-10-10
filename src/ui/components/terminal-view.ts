@@ -18,6 +18,8 @@ import type { Messages } from "../i18n.js";
 import type { ConnectionState, SessionInfo } from "../types.js";
 import { statusBarComponent } from "./status-bar.js";
 
+import { systemMonitorComponent } from "./system-monitor.js";
+
 const maxTabs = 4;
 
 type ShellTab = {
@@ -119,12 +121,13 @@ type TerminalView = {
 };
 
 export const terminalViewComponent = {
-  components: { "terminal-status-bar": statusBarComponent },
+  components: { "terminal-status-bar": statusBarComponent, "system-monitor": systemMonitorComponent },
   template: [
     '<section ref="shell" class="diskshell-shell">',
     '  <header class="diskshell-toolbar">',
     '    <div><strong>DiskShell</strong><span>{{ text.subtitle }}</span></div>',
     '    <div ref="actions" class="diskshell-actions" role="toolbar" :aria-label="text.toolbarLabel" @mouseover="showToolbarTooltip" @focusin="showToolbarTooltip" @mouseleave="hideToolbarTooltip" @focusout="hideToolbarTooltip">',
+    '      <system-monitor></system-monitor>',
     '      <div class="diskshell-action-group">',
     '        <button type="button" class="sessions" v-if="backgroundSessions.length" :aria-label="text.sessions" :data-tooltip="text.sessionsTooltip" @click="sessionsOpen = !sessionsOpen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v5H4zM4 14h16v5H4zM7 7.5h.01M7 16.5h.01"/></svg><span class="diskshell-action-badge">{{ backgroundSessions.length }}</span></button>',
     '        <button type="button" v-if="activeTab" :aria-label="text.search" :data-tooltip="text.searchTooltip" @click="openSearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>',

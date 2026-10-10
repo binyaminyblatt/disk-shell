@@ -181,14 +181,14 @@ function uploadFile(
   });
 }
 
-function sessionFetch(path: string, init: RequestInit): Promise<Response> {
+export function sessionFetch(path: string, init: RequestInit): Promise<Response> {
   const token = currentSynoToken();
   const headers = new Headers(init.headers);
   if (token) headers.set("X-Syno-Token", token);
   return fetch(path, { ...init, credentials: "same-origin", headers });
 }
 
-function synoTokenSubprotocol(value: string): string {
+export function synoTokenSubprotocol(value: string): string {
   const bytes = new TextEncoder().encode(value);
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
@@ -196,7 +196,7 @@ function synoTokenSubprotocol(value: string): string {
   return `diskshell.syno-token.${encoded}`;
 }
 
-function currentSynoToken(): string {
+export function currentSynoToken(): string {
   const scripts = Array.from(document.scripts);
   const source = document.currentScript?.getAttribute("src")
     || scripts.reverse().find((script) => script.src.includes("DiskShell-"))?.src
