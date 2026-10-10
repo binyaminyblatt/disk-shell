@@ -1,20 +1,23 @@
 # Changelog
 
-Unreleased
+v1.3.0
 
-- Add a localized plus-with-shield action that opens a separate sudo login shell using normal DSM sudo authentication and existing session persistence rules.
+### Added
 
-- Terminate foreground/background jobs and nested child sessions when a shell tab closes, unless the user explicitly enabled background persistence. Escalate unresponsive jobs after a grace period.
+- Live header graphs with automatically scaled one-minute histories for every logical CPU core, RAM, volume usage, fan speed, and available drive temperatures.
+- Authenticated metrics streaming over WebSocket with a shared sampler and keyboard-accessible detail panels for individual readings.
+- Responsive monitor widgets that hide from right to left as the window narrows.
+- Separate sudo shells opened with a plus-and-shield button and a localized password dialog. Sudo runs as the authenticated DSM account and applies its normal policy; the password is passed through a one-shot pipe separately from terminal input.
+- German and English labels for the new controls and dialogs.
 
-- Recover stalled metrics streams without waiting for the close handshake; ignore late socket events and use browser-valid close codes for malformed messages.
+### Fixed
 
-- Retry temporary DSM authentication failures without treating them as revoked sessions.
-- Reposition open metric details on resize and close them when their widget is hidden.
-- Use a monotonic graph clock, stream identity, and sample sequence numbers to handle clock corrections and service restarts.
-
-- Added localized, automatically scaled header histories for each logical CPU core, RAM, NAS volume usage, fan speed, and available drive temperatures.
-- Added an authenticated metrics WebSocket with a shared sampler, periodic session validation, and bounded timestamped history with gaps on reconnect.
-- Pause hidden monitors and expose all per-core readings in a scrollable, keyboard-accessible detail panel.
+- Closing a nonpersistent shell now terminates foreground and background jobs, including nested child sessions. Unresponsive jobs are killed after a grace period. Keeping a shell running requires explicit background persistence.
+- Stalled metrics streams reconnect without waiting for a close handshake; late socket events are ignored.
+- Temporary DSM authentication lookup failures retry without being treated as revoked sessions.
+- Metric details reposition on resize and close when their widget is hidden.
+- Monotonic graph timing, stream identity, and sequence numbers handle clock corrections and service restarts; reconnect gaps remain visible.
+- Hidden monitors suspend their connections, and sampling pauses when no monitors are subscribed.
 
 v1.2.0
 

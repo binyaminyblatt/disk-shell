@@ -163,8 +163,19 @@ Please do not test package installation on a production NAS.
 ## Releases
 
 The version in `package.json` must match the semantic Git tag. Pushing a tag such
-as `v1.1.0` runs the release workflow, builds revision `1`, generates a SHA-256
+as `v1.3.0` runs the release workflow, builds revision `1`, generates a SHA-256
 checksum, and publishes both files as a GitHub Release.
+
+Before tagging a release:
+
+1. Update `package.json`, `package-lock.json`, and `CHANGELOG.md` together.
+2. Run `npm ci`, `npm run check`, and `npm test` (including the native tests on Linux).
+3. Build with `DISKSHELL_PACKAGE_REVISION=1 npm run build` and verify the SPK on a disposable DSM system.
+4. Commit the release preparation, then create and push the matching version tag when ready to publish.
+
+The default package revision is `1`; use a higher explicit revision for subsequent
+builds installed under the same version. Updating the package restarts its service
+and ends all active shells, including background sessions.
 
 ## License
 
