@@ -46,6 +46,8 @@ type clientMessage struct {
 	SessionID  string `json:"sessionId,omitempty"`
 	Name       string `json:"name,omitempty"`
 	Persistent bool   `json:"persistent,omitempty"`
+	Sudo       bool   `json:"sudo,omitempty"`
+	Password   string `json:"password,omitempty"`
 	Cols       uint16 `json:"cols,omitempty"`
 	Rows       uint16 `json:"rows,omitempty"`
 }
@@ -167,7 +169,8 @@ func terminal(response http.ResponseWriter, request *http.Request) {
 		_ = connection.WriteJSON(serverMessage{Type: "error", Code: "invalid_open", Message: "The terminal session could not be opened."})
 		return
 	}
-	session, attachment, snapshot, err := sessionStore.open(account, firstMessage.SessionID, firstMessage.Name)
+	session, attachment, snapshot, err := sessionStore.open(account, firstMessage.SessionID, firstMessage.Name, firstMessage.Sudo, firstMessage.Password)
+	firstMessage.Password = ""
 	if err != nil {
 		code := "session_not_found"
 		message := "The terminal session is no longer available."

@@ -39,6 +39,12 @@ terminal port on the network.
   right to left as the window narrows: drive temperature, fans, volume usage,
   RAM, then CPU.
 
+Sudo shells can be opened with **plus with shield** beside the new-tab button. DiskShell
+starts sudo as the authenticated DSM account; sudo applies its normal policy.
+The password dialog sends the credential over the authenticated connection to a
+one-shot stdin pipe for sudo, separately from terminal input. Background persistence
+is opt-in for these tabs too. File uploads still use the DSM account permissions.
+
 ## Installation
 
 DiskShell currently targets **DSM 7.2 on x86_64 Synology systems**.

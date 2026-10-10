@@ -175,7 +175,7 @@ func TestTerminalRejectsWhenAuthenticationCapacityIsExhausted(t *testing.T) {
 func TestTerminalRejectsWhenShellCapacityIsExhausted(t *testing.T) {
 	fillSlots(t, shellSlots)
 	manager := newSessionManager()
-	if _, err := manager.create(&identity{username: "test", home: "/tmp"}, "Shell"); !errors.Is(err, errServiceBusy) {
+	if _, err := manager.create(&identity{username: "test", home: "/tmp"}, "Shell", false, ""); !errors.Is(err, errServiceBusy) {
 		t.Fatalf("exhausted shell capacity returned %v", err)
 	}
 }

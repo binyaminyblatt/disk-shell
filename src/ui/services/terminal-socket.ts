@@ -12,6 +12,8 @@ export interface TerminalSocketEvents {
 export interface TerminalSocketOptions {
   sessionId?: string;
   name: string;
+  sudo?: boolean;
+  password?: string;
 }
 
 export type UploadCollision = "ask" | "override" | "keep-both";
@@ -32,7 +34,8 @@ export class TerminalSocket {
   ) {}
 
   connect(): void {
-    this.disconnect();
+    this.socket?.close(1000, "Reconnecting");
+    this.socket = null;
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const token = currentSynoToken();
     const protocols = token ? [synoTokenSubprotocol(token)] : undefined;
@@ -40,14 +43,17 @@ export class TerminalSocket {
     this.socket = socket;
     this.ready = false;
     socket.addEventListener("open", () => {
-      this.send({ type: "open", sessionId: this.options.sessionId, name: this.options.name });
+      if (this.socket !== socket) return;
+      this.send({ type: "open", sessionId: this.options.sessionId, name: this.options.name, sudo: this.options.sudo, password: this.options.password });
+      this.options.password = undefined;
     });
-    socket.addEventListener("close", () => this.events.onClose());
-    socket.addEventListener("error", () => this.events.onError(messages.connectionFailed));
-    socket.addEventListener("message", (event) => this.receive(event.data));
+    socket.addEventListener("close", () => { if (this.socket !== socket) return; this.options.password = undefined; this.events.onClose(); });
+    socket.addEventListener("error", () => { if (this.socket === socket) { this.options.password = undefined; this.events.onError(messages.connectionFailed); } });
+    socket.addEventListener("message", (event) => { if (this.socket === socket) this.receive(event.data); });
   }
 
   disconnect(): void {
+    this.options.password = undefined;
     this.socket?.close(1000, "Terminal window closed");
     this.socket = null;
     this.ready = false;

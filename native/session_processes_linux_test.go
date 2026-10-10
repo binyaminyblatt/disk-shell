@@ -25,7 +25,7 @@ func TestClosingSessionTerminatesJobControlGroups(t *testing.T) {
 			manager := newSessionManager()
 			t.Cleanup(manager.shutdown)
 			account := currentTestIdentity(t)
-			session, attachment, _, err := manager.open(account, "", "Job cleanup")
+			session, attachment, _, err := manager.open(account, "", "Job cleanup", false, "")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -96,6 +96,11 @@ func TestClosingSessionTerminatesJobControlGroups(t *testing.T) {
 				t.Fatal("session cleanup stalled")
 			}
 			for _, pid := range pids {
+				// SIGKILL delivery is asynchronous, even after the leader is reaped.
+				deadline := time.Now().Add(time.Second)
+				for jobAlive(pid) && time.Now().Before(deadline) {
+					time.Sleep(10 * time.Millisecond)
+				}
 				if jobAlive(pid) {
 					t.Errorf("job %d survived tab close", pid)
 				}

@@ -20,6 +20,14 @@ export type Messages = {
   clipboardAllowed: string;
   reconnect: string;
   newTab: string;
+  newSudoTab: string;
+  sudoTabTitle: string;
+  sudoDialogTitle: string;
+  sudoDialogDescription: string;
+  sudoPasswordLabel: string;
+  sudoPasswordPlaceholder: string;
+  sudoOpen: string;
+  sudoTabTooltip: string;
   closeTab: string;
   tabsAriaLabel: string;
   tabTitle: string;
