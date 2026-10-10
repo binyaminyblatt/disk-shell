@@ -2,6 +2,8 @@
 
 Unreleased
 
+- Terminate foreground/background jobs and nested child sessions when a shell tab closes, unless the user explicitly enabled background persistence. Escalate unresponsive jobs after a grace period.
+
 - Recover stalled metrics streams without waiting for the close handshake; ignore late socket events and use browser-valid close codes for malformed messages.
 
 - Retry temporary DSM authentication failures without treating them as revoked sessions.

@@ -54,7 +54,6 @@ type shellSession struct {
 	persistent   bool
 	running      bool
 	terminating  bool
-	reaping      bool
 	killFinished chan struct{}
 	finished     chan struct{}
 	output       []byte
@@ -403,11 +402,11 @@ func (session *shellSession) run() {
 			break
 		}
 	}
+	// Even a shell that exits on its own can leave background jobs behind.
+	// Keep its PID/SID reserved until all job groups have been signalled.
+	session.terminate()
 	session.mu.Lock()
 	killFinished := session.killFinished
-	if killFinished == nil {
-		session.reaping = true
-	}
 	session.mu.Unlock()
 	if killFinished != nil {
 		<-killFinished
@@ -454,7 +453,7 @@ func (session *shellSession) finish() {
 
 func (session *shellSession) terminate() {
 	session.mu.Lock()
-	if !session.running || session.terminating || session.reaping {
+	if !session.running || session.terminating {
 		session.persistent = false
 		running := session.running
 		session.mu.Unlock()
@@ -470,11 +469,7 @@ func (session *shellSession) terminate() {
 	processID := session.command.Process.Pid
 	session.mu.Unlock()
 	go func() {
-		_ = syscall.Kill(-processID, syscall.SIGTERM)
-		<-time.After(2 * time.Second)
-		// run deliberately keeps the process leader unreaped until this final
-		// group signal, preventing its process-group ID from being reused.
-		_ = syscall.Kill(-processID, syscall.SIGKILL)
+		terminateShellProcesses(processID)
 		close(killFinished)
 	}()
 }
